@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Submission Form</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #501d72;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #af1e75;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Student Submission Form</h1>
+
+    <form id="studentForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" pattern="[A-Za-z\s]+" title="Please enter only alphabets and spaces" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" pattern="[0-9]+" title="Please enter only numbers" required><br><br>
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="4" required></textarea><br><br>
+
+        <label for="district">District:</label>
+        <input type="text" id="district" name="district" required><br><br>
+
+        <label for="taluk">Taluk:</label>
+        <input type="text" id="taluk" name="taluk" required><br><br>
+
+        <label for="village">Village:</label>
+        <input type="text" id="village" name="village" required><br><br>
+
+        <h2>Marks</h2>
+        <table>
+            <tr>
+                <th>Subject</th>
+                <th>10th</th>
+                <th>12th</th>
+            </tr>
+            <tr>
+                <td>SCIENCE</td>
+                <td><input type="number" id="marks10_1" name="marks10_1" min="0" max="100" required></td>
+                <td><input type="number" id="marks12_1" name="marks12_1" min="0" max="100" required></td>
+            </tr>
+            <tr>
+                <td>SOCIAL SCIENCE</td>
+                <td><input type="number" id="marks10_2" name="marks10_2" min="0" max="100" required></td>
+                <td><input type="number" id="marks12_2" name="marks12_2" min="0" max="100" required></td>
+            </tr>
+            <tr>
+                <td>ENGLISH</td>
+                <td><input type="number" id="marks10_3" name="marks10_3" min="0" max="100" required></td>
+                <td><input type="number" id="marks12_3" name="marks12_3" min="0" max="100" required></td>
+            </tr>
+            <tr>
+                <td>MATHS</td>
+                <td><input type="number" id="marks10_4" name="marks10_4" min="0" max="100" required></td>
+                <td><input type="number" id="marks12_4" name="marks12_4" min="0" max="100" required></td>
+            </tr>
+            <tr>
+                <td>TAMIL</td>
+                <td><input type="number" id="marks10_5" name="marks10_5" min="0" max="100" required></td>
+                <td><input type="number" id="marks12_5" name="marks12_5" min="0" max="100" required></td>
+            </tr>
+        </table>
+
+        <button type="submit">Submit</button>
+
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById('studentForm');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            // Get student details
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const district = document.getElementById('district').value;
+            const taluk = document.getElementById('taluk').value;
+            const village = document.getElementById('village').value;
+
+            // Get marks
+            const marks10 = [];
+            const marks12 = [];
+            for (let i = 1; i <= 5; i++) {
+                marks10.push(parseFloat(document.getElementById(`marks10_${i}`).value));
+                marks12.push(parseFloat(document.getElementById(`marks12_${i}`).value));
+            }
+
+            // Calculate total and average marks
+            const totalMarks10 = marks10.reduce((a, b) => a + b, 0);
+            const totalMarks12 = marks12.reduce((a, b) => a + b, 0);
+            const averageMarks10 = totalMarks10 / 5;
+            const averageMarks12 = totalMarks12 / 5;
+
+            // Generate acknowledgment number
+            const acknowledgmentNumber = Math.floor(Math.random() * 1000000);
+
+            // Create XML data (replace with your actual XML library)
+            const xmlData = `
+                <?xml version="1.0" encoding="UTF-8"?>
+                <student>
+                    <name>${name}</name>
+                    <email>${email}</email>
+                    <phone>${phone}</phone>
+                    <address>${address}</address>
+                    <district>${district}</district>
+                    <taluk>${taluk}</taluk>
+                    <village>${village}</village>
+                    <marks10>
+                        ${marks10.join(', ')}
+                    </marks10>
+                    <marks12>
+                        ${marks12.join(', ')}
+                    </marks12>
+                    <totalMarks10>${totalMarks10}</totalMarks10>
+                    <averageMarks10>${averageMarks10}</averageMarks10>
+                    <totalMarks12>${totalMarks12}</totalMarks12>
+                    <averageMarks12>${averageMarks12}</averageMarks12>
+                    <acknowledgmentNumber>${acknowledgmentNumber}</acknowledgmentNumber>
+                </student>
+            `;
+
+            // Store XML data (replace with your actual XML storage mechanism)
+            // This is a simplified example and you might need to use a library like JSZip
+            // to create and download a ZIP file containing the XML data.
+            const blob = new Blob([xmlData], { type: 'text/xml' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'student_data.xml';
+            link.click();
+
+            // Display results on the page
+            resultDiv.innerHTML = `
+                <h2>Submission Successful!</h2>
+                <p>Acknowledgment Number: ${acknowledgmentNumber}</p>
+                <p>10th: Total Marks: ${totalMarks10}, Average Marks: ${averageMarks10}</p>
+                <p>12th: Total Marks: ${totalMarks12}, Average Marks: ${averageMarks12}</p>
+            `;
+        });
+    </script>
+
+</body>
+</html>
